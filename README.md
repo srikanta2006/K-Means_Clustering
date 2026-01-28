@@ -3,7 +3,7 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Stars](https://img.shields.io/github/stars/srikanta2006/K-Means_Clustering?style=social)](https://github.com/yourusername/K-Means_Clustering)
+[![GitHub Stars](https://img.shields.io/github/stars/srikanta2006/K-Means_Clustering?style=social)](https://github.com/srikanta2006/K-Means_Clustering)
 
 > **Data-driven customer segmentation using K-Means clustering with interactive visualizations**
 
