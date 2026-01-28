@@ -14,12 +14,39 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Title
-st.title("🎯 K-Means Clustering - Wholesale Customer Segmentation")
+# Custom CSS for better styling
 st.markdown("""
-This application performs K-Means clustering on wholesale customer data
-to identify and segment customers into distinct groups based on their purchasing patterns.
-""")
+<style>
+    /* Title styling */
+    h1 {
+        color: #1f77b4;
+        border-bottom: 3px solid #1f77b4;
+        padding-bottom: 0.5rem;
+    }
+    
+    h2 {
+        color: #2ca02c;
+        margin-top: 1.5rem;
+    }
+    
+    /* Custom divider */
+    hr {
+        border: 2px solid #e0e0e0;
+        margin: 2rem 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Title with icon
+st.markdown("""
+<div style='text-align: center; padding: 2rem 0;'>
+    <h1>🎯 K-Means Clustering</h1>
+    <h3 style='color: #666;'>Wholesale Customer Segmentation</h3>
+    <p style='color: #888; font-size: 1.05rem;'>Identify and analyze customer segments based on purchasing patterns</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.divider()
 
 # Sidebar for navigation
 st.sidebar.title("📊 Navigation")
@@ -55,25 +82,49 @@ data, X, X_scaled, scaler = load_and_prepare_data()
 
 # Page 1: Clustering Analysis
 if page == "🔍 Clustering Analysis":
-    st.header("🔍 K-Means Clustering Analysis")
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 1rem; color: white; margin-bottom: 2rem;'>
+        <h2 style='color: white; margin-top: 0;'>🔍 Clustering Analysis</h2>
+        <p>Explore customer segments discovered through K-Means clustering algorithm</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Dataset info tabs
+    tab1, tab2 = st.tabs(["📊 Dataset Overview", "📈 Statistics"])
     
-    with col1:
-        st.subheader("Dataset Overview")
-        st.write(f"**Total Records:** {len(data)}")
-        st.write(f"**Features:** {X.shape[1]}")
-        st.write(f"**Columns:** {', '.join(X.columns.tolist())}")
+    with tab1:
+        col1, col2, col3, col4 = st.columns(4)
         
-        st.subheader("Sample Data")
-        st.dataframe(data.head(10), use_container_width=True)
+        with col1:
+            st.metric("Total Customers", f"{len(data):,}", delta="440 records")
+        
+        with col2:
+            st.metric("Features", X.shape[1], delta="6 categories")
+        
+        with col3:
+            st.metric("Clusters", 3, delta="Optimal k")
+        
+        with col4:
+            st.metric("Preprocessing", "StandardScaler", delta="Normalized")
+        
+        st.markdown("**Feature Columns:**")
+        features_display = ", ".join([f"<span style='background: #f0f0f0; padding: 0.3rem 0.7rem; border-radius: 0.3rem; margin: 0.2rem;'>{col}</span>" for col in X.columns.tolist()])
+        st.markdown(features_display, unsafe_allow_html=True)
+        
+        st.markdown("**Sample Data (First 10 Records):**")
+        st.dataframe(data.head(10), width='stretch', hide_index=True)
     
-    with col2:
-        st.subheader("Data Statistics")
-        st.dataframe(data.describe(), use_container_width=True)
+    with tab2:
+        st.markdown("**Statistical Summary:**")
+        st.dataframe(data.describe().T, width='stretch')
     
     # K-Means with 3 clusters
-    st.subheader("🎯 K-Means Clustering (k=3)")
+    st.markdown("""
+    <div style='background: #f8f9fa; padding: 1.5rem; border-left: 4px solid #667eea; border-radius: 0.5rem; margin: 1.5rem 0;'>
+        <h3 style='margin-top: 0; color: #667eea;'>🎯 K-Means Clustering Results (k=3)</h3>
+        <p>Algorithm: K-Means++ | Iterations: 300 | Initialization Runs: 10</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     kmeans = KMeans(n_clusters=3, init='k-means++', max_iter=300, n_init=10, random_state=42)
     y_kmeans = kmeans.fit_predict(X_scaled)
@@ -82,45 +133,67 @@ if page == "🔍 Clustering Analysis":
     data_with_clusters = data.copy()
     data_with_clusters['Cluster'] = y_kmeans
     
-    # Display cluster distribution
+    # Display cluster distribution with enhanced metrics
+    st.markdown("**Cluster Distribution:**")
     col1, col2, col3 = st.columns(3)
     
     cluster_counts = data_with_clusters['Cluster'].value_counts().sort_index()
+    cluster_pcts = (cluster_counts / len(data_with_clusters) * 100).round(1)
     
-    with col1:
-        st.metric("Cluster 0", f"{cluster_counts[0]} customers")
-    with col2:
-        st.metric("Cluster 1", f"{cluster_counts[1]} customers")
-    with col3:
-        st.metric("Cluster 2", f"{cluster_counts[2]} customers")
+    colors_metric = ['#FF6B6B', '#4ECDC4', '#45B7D1']
     
-    # Cluster distribution chart
-    st.subheader("Cluster Distribution")
-    fig, ax = plt.subplots(figsize=(10, 5))
+    for i, col in enumerate([col1, col2, col3]):
+        with col:
+            st.markdown(f"""
+            <div style='background: {colors_metric[i]}; padding: 1.5rem; border-radius: 0.8rem; color: white; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);'>
+                <h3 style='margin: 0; font-size: 2rem;'>Cluster {i}</h3>
+                <h2 style='margin: 0.5rem 0 0 0;'>{cluster_counts[i]}</h2>
+                <p style='margin: 0.3rem 0 0 0;'>{cluster_pcts[i]}% of customers</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Cluster distribution chart with enhanced styling
+    st.markdown("**Customer Distribution Chart:**")
+    fig, ax = plt.subplots(figsize=(12, 6))
     
     cluster_dist = data_with_clusters['Cluster'].value_counts().sort_index()
     colors = ['#FF6B6B', '#4ECDC4', '#45B7D1']
-    ax.bar(cluster_dist.index, cluster_dist.values, color=colors, edgecolor='black', linewidth=1.5)
-    ax.set_xlabel('Cluster', fontsize=12)
-    ax.set_ylabel('Number of Customers', fontsize=12)
-    ax.set_title('Customer Distribution Across Clusters', fontsize=14, fontweight='bold')
-    ax.grid(axis='y', alpha=0.3)
+    bars = ax.bar(cluster_dist.index, cluster_dist.values, color=colors, edgecolor='black', linewidth=2, alpha=0.85)
     
-    for i, v in enumerate(cluster_dist.values):
-        ax.text(i, v + 5, str(v), ha='center', fontweight='bold')
+    # Add gradient effect
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height)}\n({height/len(data)*100:.1f}%)',
+                ha='center', va='bottom', fontweight='bold', fontsize=11)
     
-    st.pyplot(fig, use_container_width=True)
+    ax.set_xlabel('Cluster', fontsize=13, fontweight='bold')
+    ax.set_ylabel('Number of Customers', fontsize=13, fontweight='bold')
+    ax.set_title('Customer Distribution Across Clusters', fontsize=15, fontweight='bold', pad=20)
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    ax.set_facecolor('#f8f9fa')
+    ax.set_ylim(0, max(cluster_dist.values) * 1.15)
+    
+    st.pyplot(fig, width='stretch')
     
     # Cluster Visualization (2D Scatter Plot)
-    st.subheader("🎨 Cluster Visualization")
+    st.markdown("""
+    <div style='background: #f0f4ff; padding: 1.5rem; border-radius: 0.8rem; margin: 2rem 0;'>
+        <h3 style='margin-top: 0; color: #667eea;'>🎨 Interactive Cluster Visualization</h3>
+        <p>Select two features below to visualize how clusters separate in 2D space</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns([1, 1, 2])
     
     with col1:
         feature_x = st.selectbox("X-axis Feature:", X.columns, index=0, key="feat_x")
     
     with col2:
         feature_y = st.selectbox("Y-axis Feature:", X.columns, index=1, key="feat_y")
+    
+    with col3:
+        st.info("💡 Tip: Choose different feature combinations to explore cluster patterns")
     
     # Create scatter plot
     fig, ax = plt.subplots(figsize=(12, 7))
@@ -163,12 +236,18 @@ if page == "🔍 Clustering Analysis":
     ax.legend(fontsize=11, loc='best')
     ax.grid(True, alpha=0.3)
     
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig, width='stretch')
     
-    # Feature comparison in clusters
-    st.subheader("📊 Cluster Characteristics")
+    # Feature comparison in clusters with enhanced styling
+    st.markdown("""
+    <div style='background: #fff3e0; padding: 1.5rem; border-radius: 0.8rem; margin: 2rem 0; border-left: 4px solid #ff9800;'>
+        <h3 style='margin-top: 0; color: #e65100;'>📊 Cluster Characteristics & Profiles</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
+    
+    cluster_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1']
     
     for cluster_id in range(3):
         cluster_data = data_with_clusters[data_with_clusters['Cluster'] == cluster_id]
@@ -181,39 +260,78 @@ if page == "🔍 Clustering Analysis":
             container = col3
         
         with container:
-            st.write(f"**Cluster {cluster_id}**")
-            st.write(f"Size: {len(cluster_data)} customers")
-            st.write(f"**Average Spending:**")
+            st.markdown(f"""
+            <div style='background: {cluster_colors[cluster_id]}20; border: 2px solid {cluster_colors[cluster_id]}; padding: 1.5rem; border-radius: 0.8rem;'>
+                <h4 style='margin-top: 0; color: {cluster_colors[cluster_id]}; text-align: center;'>Cluster {cluster_id}</h4>
+                <p style='text-align: center; font-weight: bold;'>{len(cluster_data)} customers ({len(cluster_data)/len(data)*100:.1f}%)</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("**Average Spending by Category:**")
             
             for col in X.columns:
                 avg_val = cluster_data[col].mean()
-                st.write(f"  • {col}: {avg_val:,.0f}")
+                pct_of_total = (cluster_data[col].mean() / data[col].mean()) * 100
+                
+                # Create a visual progress bar
+                st.markdown(f"**{col}**: ${avg_val:,.0f}")
+                st.progress(min(pct_of_total / 100, 1.0))
     
     # Detailed cluster data
-    st.subheader("📋 Detailed Cluster Data")
+    st.markdown("""
+    <div style='background: #e3f2fd; padding: 1.5rem; border-radius: 0.8rem; margin: 2rem 0; border-left: 4px solid #2196f3;'>
+        <h3 style='margin-top: 0; color: #1565c0;'>📋 Detailed Cluster Data</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
-    selected_cluster = st.selectbox("View cluster data:", [0, 1, 2], key="cluster_select")
+    col_left, col_right = st.columns([3, 1])
     
-    cluster_df = data_with_clusters[data_with_clusters['Cluster'] == selected_cluster]
-    st.dataframe(cluster_df, use_container_width=True)
+    with col_left:
+        selected_cluster = st.selectbox("Select a cluster to view detailed data:", [0, 1, 2], key="cluster_select")
+    
+    with col_right:
+        cluster_df = data_with_clusters[data_with_clusters['Cluster'] == selected_cluster]
+        st.metric("Records", f"{len(cluster_df)}")
+    
+    st.dataframe(cluster_df, width='stretch', hide_index=True)
     
     # Download cluster data
     csv = cluster_df.to_csv(index=False)
-    st.download_button(
-        label=f"Download Cluster {selected_cluster} Data (CSV)",
-        data=csv,
-        file_name=f"cluster_{selected_cluster}.csv",
-        mime="text/csv"
-    )
+    col1, col2, col3 = st.columns([1, 1, 2])
+    
+    with col1:
+        st.download_button(
+            label="⬇️ Download CSV",
+            data=csv,
+            file_name=f"cluster_{selected_cluster}.csv",
+            mime="text/csv",
+            width='stretch'
+        )
+    
+    with col2:
+        st.download_button(
+            label="⬇️ Download JSON",
+            data=cluster_df.to_json(orient='records'),
+            file_name=f"cluster_{selected_cluster}.json",
+            mime="application/json",
+            width='stretch'
+        )
 
 # Page 2: Elbow Method
 elif page == "📈 Elbow Method":
-    st.header("📈 Elbow Method Analysis")
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); padding: 2rem; border-radius: 1rem; color: white; margin-bottom: 2rem;'>
+        <h2 style='color: white; margin-top: 0;'>📈 Elbow Method Analysis</h2>
+        <p>Find the optimal number of clusters by analyzing WCSS (Within-Cluster Sum of Squares)</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("""
-    The **Elbow Method** is used to find the optimal number of clusters by plotting
-    the Within-Cluster Sum of Squares (WCSS) against the number of clusters.
-    The "elbow" point indicates the optimal number of clusters.
+    <div style='background: #fff3e0; padding: 1.5rem; border-radius: 0.8rem; margin: 1.5rem 0;'>
+        <h4 style='margin-top: 0; color: #e65100;'>📌 What is the Elbow Method?</h4>
+        <p>The <strong>Elbow Method</strong> identifies the optimal k by plotting WCSS against cluster count. 
+        The \"elbow\" point (where WCSS decreases slowly) indicates the best balance between model complexity and performance.</p>
+    </div>
     """)
     
     # Calculate WCSS for different k values
@@ -226,34 +344,57 @@ elif page == "📈 Elbow Method":
             kmeans.fit(X_scaled)
             wcss.append(kmeans.inertia_)
     
-    # Plot elbow method
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(k_range, wcss, 'bo-', linewidth=2, markersize=8)
-    ax.axvline(x=3, color='red', linestyle='--', linewidth=2, label='Optimal k=3')
-    ax.set_xlabel('Number of Clusters (k)', fontsize=12)
-    ax.set_ylabel('WCSS (Within-Cluster Sum of Squares)', fontsize=12)
-    ax.set_title('Elbow Method for Optimal k', fontsize=14, fontweight='bold')
-    ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=11)
-    ax.set_xticks(k_range)
+    # Plot elbow method with enhanced styling
+    fig, ax = plt.subplots(figsize=(12, 7))
     
-    st.pyplot(fig, use_container_width=True)
+    ax.plot(k_range, wcss, 'o-', linewidth=3, markersize=10, color='#667eea', label='WCSS')
+    ax.axvline(x=3, color='#ff6b6b', linestyle='--', linewidth=3, label='Optimal k=3')
+    ax.fill_between(k_range, wcss, alpha=0.2, color='#667eea')
+    
+    # Highlight the elbow point
+    ax.scatter([3], [wcss[2]], color='#ff6b6b', s=300, marker='*', zorder=5, edgecolors='black', linewidth=2)
+    
+    ax.set_xlabel('Number of Clusters (k)', fontsize=13, fontweight='bold')
+    ax.set_ylabel('WCSS (Within-Cluster Sum of Squares)', fontsize=13, fontweight='bold')
+    ax.set_title('Elbow Method for Optimal Number of Clusters', fontsize=15, fontweight='bold', pad=20)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(fontsize=12, loc='upper right')
+    ax.set_xticks(k_range)
+    ax.set_facecolor('#f8f9fa')
+    
+    st.pyplot(fig, width='stretch')
     
     # WCSS values table
-    st.subheader("WCSS Values")
-    wcss_df = pd.DataFrame({'Number of Clusters': k_range, 'WCSS': wcss})
-    st.dataframe(wcss_df, use_container_width=True)
+    st.markdown("**WCSS Values for Different k:**")
+    wcss_df = pd.DataFrame({
+        'k (Clusters)': list(k_range),
+        'WCSS': [f"{w:.2f}" for w in wcss],
+        'Reduction %': ['-'] + [f"{((wcss[i-1]-wcss[i])/wcss[i-1]*100):.1f}%" for i in range(1, len(wcss))]
+    })
+    st.dataframe(wcss_df, width='stretch', hide_index=True)
     
-    st.info("""
-    ✅ **Optimal k = 3** (The elbow point)
+    col1, col2 = st.columns([2, 1])
     
-    The WCSS decreases significantly from k=1 to k=3, but the rate of decrease
-    slows down after k=3, indicating that 3 clusters is the optimal choice.
-    """)
+    with col1:
+        st.success("""
+        ✅ **Optimal k = 3** (The Elbow Point)
+        
+        The WCSS decreases significantly from k=1 to k=3, 
+        but the rate of decrease slows down substantially after k=3. This indicates that 
+        3 clusters is the optimal choice - adding more clusters provides diminishing returns.
+        """)
+    
+    with col2:
+        st.metric("Elbow at k", "3", delta="Confirmed")
 
 # Page 3: About
 elif page == "ℹ️ About":
-    st.header("ℹ️ About K-Means Clustering")
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); padding: 2rem; border-radius: 1rem; color: white; margin-bottom: 2rem;'>
+        <h2 style='color: white; margin-top: 0;'>ℹ️ About K-Means Clustering</h2>
+        <p>Learn how K-Means clustering works and its applications</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("""
     ## What is K-Means Clustering?
@@ -359,7 +500,12 @@ elif page == "ℹ️ About":
 
 # Page 4: Business Insights
 elif page == "💼 Business Insights":
-    st.header("💼 Business Insights & Strategies")
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, #fa709a 0%, #fee140 100%); padding: 2rem; border-radius: 1rem; color: white; margin-bottom: 2rem;'>
+        <h2 style='color: white; margin-top: 0;'>💼 Business Insights & Strategies</h2>
+        <p>Actionable strategies for each customer segment</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("""
     Based on the clustering analysis, here are recommended business strategies for each customer segment:
@@ -481,7 +627,12 @@ elif page == "💼 Business Insights":
 
 # Page 5: Stability & Limitations
 elif page == "🔬 Stability & Limitations":
-    st.header("🔬 Model Stability & Limitations Analysis")
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, #a8edea 0%, #fed6e3 100%); padding: 2rem; border-radius: 1rem; color: #333; margin-bottom: 2rem;'>
+        <h2 style='color: #333; margin-top: 0;'>🔬 Model Stability & Limitations Analysis</h2>
+        <p>Test clustering robustness and understand model constraints</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("""
     This section analyzes the robustness of the K-Means clustering model and discusses limitations.
@@ -533,7 +684,7 @@ elif page == "🔬 Stability & Limitations":
         })
     
     stability_df = pd.DataFrame(stability_data)
-    st.dataframe(stability_df, use_container_width=True)
+    st.dataframe(stability_df, width='stretch')
     
     # Stability visualization
     fig, ax = plt.subplots(figsize=(10, 5))
@@ -547,7 +698,7 @@ elif page == "🔬 Stability & Limitations":
     ax.legend()
     ax.grid(axis='y', alpha=0.3)
     
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig, width='stretch')
     
     st.markdown("""
     **Interpretation:**
@@ -626,7 +777,7 @@ elif page == "🔬 Stability & Limitations":
         ]
     })
     
-    st.dataframe(limitations, use_container_width=True)
+    st.dataframe(limitations, width='stretch')
     
     # Recommendations
     st.subheader("💡 Recommendations for Better Results")
@@ -653,10 +804,14 @@ elif page == "🔬 Stability & Limitations":
         5. Domain expert review of results
         """)
 
-# Footer
-st.markdown("---")
+# Footer with enhanced styling
+st.divider()
 st.markdown("""
-<div style='text-align: center'>
-    <p>🎯 K-Means Clustering | Wholesale Customer Segmentation | 2026</p>
+<div style='text-align: center; padding: 2rem; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 0.8rem; color: white; margin-top: 3rem;'>
+    <h3 style='margin-top: 0;'>🎯 K-Means Clustering Dashboard</h3>
+    <p style='margin: 0.5rem 0;'>Wholesale Customer Segmentation | Data-Driven Insights</p>
+    <p style='margin: 0.5rem 0; font-size: 0.9rem;'>© 2026 | Machine Learning Analytics Platform</p>
+    <hr style='border-color: rgba(255,255,255,0.3); margin: 1rem 0;'>
+    <p style='margin: 0.3rem 0; font-size: 0.85rem;'>📊 Powered by Scikit-Learn | 📈 Visualized with Matplotlib | 🚀 Built with Streamlit</p>
 </div>
 """, unsafe_allow_html=True)
