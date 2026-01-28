@@ -16,8 +16,8 @@ A professional, production-ready Streamlit web application that performs K-Means
 - ✅ **Business Insights** - Actionable strategies for each customer segment
 - ✅ **Model Stability** - Analysis of clustering robustness
 - ✅ **Export Data** - Download cluster data in CSV/JSON formats
-- ✅ **Cloud Ready** - Deploy to Streamlit Cloud, Docker, or Heroku
-- ✅ **Fully Documented** - Comprehensive code and deployment guides
+- ✅ **Cloud Ready** - Deploy to Streamlit Cloud or Heroku
+- ✅ **Fully Documented** - Comprehensive code and README
 
 ## 📋 Features
 
@@ -117,26 +117,7 @@ http://localhost:8501
 
 **Get a public URL instantly - no credit card needed**
 
-### Option 2: Docker (Container)
-
-**Build and run as a Docker container:**
-
-```bash
-# Build image
-docker build -t kmeans-clustering .
-
-# Run container
-docker run -p 8501:8501 kmeans-clustering
-
-# Access at http://localhost:8501
-```
-
-**Or use docker-compose:**
-```bash
-docker-compose up
-```
-
-### Option 3: Heroku (Legacy - Still Works)
+### Option 2: Heroku (Legacy - Still Works)
 
 ```bash
 # Login to Heroku
@@ -152,7 +133,7 @@ git push heroku main
 heroku open
 ```
 
-### Option 4: Railway / Render / Replit
+### Option 3: Railway / Render / Replit
 All platforms support Streamlit apps - check their documentation for Streamlit deployment guides.
 
 ## 📊 Dataset Overview
@@ -204,14 +185,9 @@ K-Means_Clustering/
 ├── app.py                        # Original K-Means clustering script
 ├── Whole_Sale.csv                # Dataset (440 records, 6 features)
 ├── requirements.txt              # Python dependencies
-├── Dockerfile                    # Docker container configuration
-├── docker-compose.yml            # Docker Compose orchestration
 ├── .streamlit/
 │   └── config.toml              # Streamlit configuration
 ├── README.md                     # This file
-├── UI_IMPROVEMENTS.md            # UI/UX enhancement details
-├── DEPLOYMENT_GUIDE.md           # Detailed deployment instructions
-├── VISUALIZATION_UPDATE.md       # Interactive visualization features
 └── .gitignore                   # Git ignore rules
 ```
 
@@ -223,8 +199,6 @@ K-Means_Clustering/
 | **app.py** | Console script for batch clustering | ~100 lines |
 | **Whole_Sale.csv** | Customer purchasing data | 440 rows × 6 cols |
 | **requirements.txt** | Python package dependencies | 8 packages |
-| **Dockerfile** | Container image definition | Multi-stage build |
-| **docker-compose.yml** | Container orchestration | Full stack setup |
 
 ## 🔧 Technology Stack
 
@@ -242,19 +216,20 @@ K-Means_Clustering/
 | **matplotlib** | 3.5+ | Data visualization |
 | **seaborn** | 0.12+ | Statistical plots |
 
-### Deployment
+### Deployment & Tools
 | Tool | Purpose |
 |------|---------|
-| **Docker** | Container orchestration |
+| **Streamlit Cloud** | Cloud deployment (recommended) |
+| **Heroku** | Legacy cloud platform |
 | **Git** | Version control |
-| **Python 3.13** | Runtime environment |
+| **Python 3.8+** | Runtime environment |
 
 ### Platform Support
 - ✅ Streamlit Cloud (recommended)
-- ✅ Docker / Docker Compose
 - ✅ Heroku
 - ✅ Railway
 - ✅ Render
+- ✅ Replit
 - ✅ Local machine
 
 ## 📈 Algorithm Overview
@@ -437,7 +412,7 @@ docker build -t kmeans-app .
 ```
 
 ### Deployment issues
-Check [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed troubleshooting steps.
+Refer to the troubleshooting section above or check Streamlit's official documentation.
 
 ## 📈 Performance Metrics
 
@@ -490,7 +465,7 @@ Lower values indicate better clustering
 ## 📞 Support & Contact
 
 ### Getting Help
-1. **Check Documentation** - See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
+1. **Check Documentation** - See README.md
 2. **Review Examples** - See Usage Examples section above
 3. **Check Issues** - Browse [GitHub Issues](https://github.com/yourusername/K-Means_Clustering/issues)
 4. **Ask Community** - Streamlit [Discourse](https://discuss.streamlit.io/)
